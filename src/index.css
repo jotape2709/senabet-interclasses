@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-secondary text-white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-2 rounded-md font-bold uppercase tracking-wider transition-all duration-200 text-center;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-secondary-dark hover:bg-primary-light;
+  }
+  
+  .nav-link {
+    @apply px-4 py-2 text-lg font-medium transition-colors duration-200 uppercase;
+  }
+  
+  .nav-link-active {
+    @apply bg-primary text-secondary-dark;
+  }
+  
+  .card {
+    @apply bg-secondary-light rounded-lg overflow-hidden shadow-lg;
+  }
+  
+  .card-hover {
+    @apply transition-transform duration-200 hover:scale-[1.02];
+  }
+}
