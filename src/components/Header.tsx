@@ -59,14 +59,6 @@ const Header: React.FC = () => {
                   TORNEIOS
                 </Link>
               </li>
-              <li>
-                <Link 
-                  to="/cassino"
-                  className={`nav-link rounded-md ${isActive('/cassino') ? 'nav-link-active' : 'hover:text-primary'}`}
-                >
-                  CASSINO
-                </Link>
-              </li>
             </ul>
           </nav>
 
@@ -77,8 +69,8 @@ const Header: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <User size={20} className="text-primary" />
                   <div className="text-right">
-                    <p className="text-sm font-medium">{profile?.fullName}</p>
-                    <p className="text-xs text-primary">$ {profile?.senacoins_balance?.toFixed(2) || '0.00'}</p>
+                    <p className="text-sm font-medium">{profile?.name}</p>
+                    <p className="text-xs text-primary">$ {profile?.rewards?.toFixed(2) || '0.00'}</p>
                   </div>
                 </div>
                 {profile?.role === 'admin' && (
@@ -158,22 +150,13 @@ const Header: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/cassino"
-                  className={`block py-2 px-4 rounded ${isActive('/cassino') ? 'bg-primary text-secondary-dark font-bold' : 'hover:bg-secondary-light'}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  CASSINO
-                </Link>
-              </li>
-              <li>
                 {user ? (
                   <div className="space-y-2">
                     <div className="flex items-center py-2 px-4 bg-secondary-light rounded">
                       <User size={20} className="text-primary mr-2" />
                       <div>
-                        <p className="text-sm font-medium">{profile?.fullName}</p>
-                        <p className="text-xs text-primary">$ {profile?.senacoins_balance?.toFixed(2) || '0.00'}</p>
+                        <p className="text-sm font-medium">{profile?.name}</p>
+                        <p className="text-xs text-primary">$ {profile?.rewards?.toFixed(2) || '0.00'}</p>
                       </div>
                     </div>
                     {profile?.role === 'admin' && (

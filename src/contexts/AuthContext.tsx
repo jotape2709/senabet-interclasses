@@ -1,27 +1,38 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { 
-  onAuthStateChanged, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  User 
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  User
 } from "firebase/auth";
 import { auth, db } from "../lib/firebase";
-import { doc, setDoc, getDoc, updateDoc, increment } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, increment, Timestamp } from "firebase/firestore";
+
+// Define the shape of the user profile stored in Firestore
+export interface UserProfile {
+  uid: string;
+  email: string;
+  name: string;
+  phone: string;
+  role: "student" | "teacher" | "admin";
+  rewards: number;
+  createdAt: Timestamp;
+}
 
 interface AuthContextProps {
   user: User | null;
-  role: string | null;
+  profile: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: any }>;
   signUp: (
-    email: string, 
-    password: string, 
-    name: string, 
-    phone: string, 
+    email: string,
+    password: string,
+    name: string,
+    phone: string,
     role: "student" | "teacher"
   ) => Promise<{ error?: any }>;
-  signOutUser: () => Promise<void>;
+  signOut: () => Promise<void>;
   addDailyReward: () => Promise<{ success: boolean; error?: any }>;
 }
 
@@ -29,22 +40,21 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<string | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Monitorar login/logout
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         const userDoc = await getDoc(doc(db, "users", currentUser.uid));
         if (userDoc.exists()) {
-          setRole(userDoc.data().role);
+          setProfile(userDoc.data() as UserProfile);
         } else {
-          setRole(null);
+          setProfile(null);
         }
       } else {
-        setRole(null);
+        setProfile(null);
       }
       setLoading(false);
     });
@@ -62,10 +72,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (
-    email: string, 
-    password: string, 
-    name: string, 
-    phone: string, 
+    email: string,
+    password: string,
+    name: string,
+    phone: string,
     role: "student" | "teacher"
   ) => {
     try {
@@ -88,11 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signOutUser = async () => {
-    await signOut(auth);
+  const signOut = async () => {
+    await firebaseSignOut(auth);
+    setProfile(null);
   };
 
-  // 🚀 Sistema de recompensa diária
   const addDailyReward = async () => {
     if (!user) return { success: false, error: "Usuário não autenticado" };
 
@@ -101,6 +111,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await updateDoc(userRef, {
         rewards: increment(1)
       });
+      if (profile) {
+        setProfile({ ...profile, rewards: profile.rewards + 1 });
+      }
       return { success: true };
     } catch (error) {
       return { success: false, error };
@@ -108,8 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider 
-      value={{ user, role, loading, signIn, signUp, signOutUser, addDailyReward }}
+    <AuthContext.Provider
+      value={{ user, profile, loading, signIn, signUp, signOut, addDailyReward }}
     >
       {children}
     </AuthContext.Provider>
@@ -119,7 +132,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuthContext = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuthContext deve ser usado dentro de AuthProvider");
+    throw new Error("useAuthContext must be used within an AuthProvider");
   }
   return context;
 };

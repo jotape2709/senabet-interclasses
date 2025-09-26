@@ -10,7 +10,6 @@ import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import BonusPage from './pages/BonusPage';
 import SchedulePage from './pages/SchedulePage';
-import CasinoPage from './pages/CasinoPage';
 
 function App() {
   return (
@@ -54,14 +53,6 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <SchedulePage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/cassino" 
-                element={
-                  <ProtectedRoute>
-                    <CasinoPage />
                   </ProtectedRoute>
                 } 
               />
