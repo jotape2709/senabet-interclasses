@@ -2,26 +2,20 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyBDWJZbXSAt0RoU5wCQmuVACrOuSiTN7DQ",
+  authDomain: "senabet-3bd86.firebaseapp.com",
+  projectId: "senabet-3bd86",
+  storageBucket: "senabet-3bd86.firebasestorage.app",
+  messagingSenderId: "1035741065112",
+  appId: "1:1035741065112:web:63f8508a30c2dc0ef945ed",
+  measurementId: "G-H9GQ6D7BL2"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Analytics só se suportado (navegador)
-let analytics: ReturnType<typeof getAnalytics> | null = null;
-isSupported().then((yes) => {
-  if (yes) analytics = getAnalytics(app);
-});
+export { app, auth, db };
 
-export { app, auth, db, analytics };
